@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zalo OAuth Redirect</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 24px; max-width: 820px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    h1 { font-size: 20px; margin: 0 0 12px; }
+    pre { background: #f7f7f9; padding: 12px; border-radius: 8px; overflow-x: auto; }
+    .row { margin: 12px 0; }
+    button { padding: 10px 16px; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; }
+    .ok { color: #0a7; font-weight: 600; }
+    .warn { color: #c63; font-weight: 600; }
+    .muted { color: #666; }
+    code { background: #f1f3f5; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Trang nhận authorization_code (Zalo OA OAuth)</h1>
+    <div class="row">
+      <div>Tham số trả về:</div>
+      <pre id="params"></pre>
+    </div>
+    <div class="row">
+      <div>Mã <code>code</code> của bạn:</div>
+      <pre id="codeBox">(đang đọc URL...)</pre>
+      <button id="copyBtn">Sao chép code</button>
+      <span id="copyState" class="muted"></span>
+    </div>
+    <div class="row">
+      <div class="muted">Mẹo: dán code vào Google Sheet → menu <b>Zalo OAuth → Nhập authorization code…</b> để đổi thành <b>refresh_token</b>.</div>
+    </div>
+  </div>
+
+  <script>
+    const usp = new URLSearchParams(location.search);
+    const all = Object.fromEntries(usp.entries());
+    const code = usp.get('code') || '';
+
+    document.getElementById('params').textContent = JSON.stringify(all, null, 2);
+    document.getElementById('codeBox').textContent = code || '(không có code – kiểm tra lại redirect_uri & miền đã xác minh)';
+
+    document.getElementById('copyBtn').onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(code);
+        document.getElementById('copyState').textContent = code ? 'Đã sao chép!' : 'Không có code để sao chép.';
+      } catch (e) {
+        document.getElementById('copyState').textContent = 'Trình duyệt chặn sao chép tự động; bạn copy thủ công.';
+      }
+    };
+  </script>
+</body>
+</html>
